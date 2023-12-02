@@ -1,0 +1,28 @@
+<PongGame>:
+    canvas:
+        Rectangle:
+            pos: self.center_x,0    ## position of rectangle  [self.center_x-5] to position exactly in middle
+            size: 10,self.height    ## size of white column in middle
+
+    Label:
+        text:"0"
+        center_x:root.width/4
+        top:root.top-50
+        font_size:50
+    
+    Label:
+        text:"0"
+        center_x:root.width * 3/4
+        top:root.top-50
+        font_size:50
+
+    PongBall:
+        center:self.parent.center
+
+<PongBall>:
+    size:50,50
+    canvas:
+        Ellipse:
+            pos:self.pos
+            size:self.size
+
