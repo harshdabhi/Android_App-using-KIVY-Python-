@@ -1,8 +1,11 @@
 from kivymd.app import MDApp
 from kivymd.uix.dialog import MDDialog
-from kivymd.uix.button import MDRoundFlatIconButton
+from kivymd.uix.button import MDRoundFlatIconButton,MDFillRoundFlatIconButton
 from kivymd.uix.screen import Screen
 from kivymd.uix.label import MDLabel,MDIcon
+from kivymd.uix.toolbar import MDBottomAppBar,MDTopAppBar
+from kivymd.uix.navigationdrawer import MDNavigationDrawer 
+
 
 
 class AlertApp(MDApp):
@@ -11,6 +14,7 @@ class AlertApp(MDApp):
     def build(self):
         self.theme_cls.theme_style = "Dark"
         self.status=''
+
 
         icon=MDIcon(icon="cctv",
                     pos_hint={'center_x':0.5,'center_y':0.6},
@@ -36,9 +40,18 @@ class AlertApp(MDApp):
             pos_hint={'center_x':0.5,'center_y':0.7},
             font_style= 'H6' 
         )
+
+        tool_bar=MDTopAppBar(
+            title="CCTV",
+            pos_hint={'top':1},
+            left_action_items=[["menu", lambda x: x]],
+            right_action_items=[["chat", lambda x: x]],
+
+            
+        )
     
         screen=Screen()
-        self.On_button = MDRoundFlatIconButton(
+        self.On_button = MDFillRoundFlatIconButton(
             text="On",
             icon="power",
             pos_hint={"center_x": 0.5, "center_y": 0.4},
@@ -46,13 +59,14 @@ class AlertApp(MDApp):
 
         )
 
-        self.Off_button = MDRoundFlatIconButton(
+        self.Off_button = MDFillRoundFlatIconButton(
             text="Off",
             icon="power",
             pos_hint={"center_x": 0.5, "center_y": 0.3},
             on_release=self.stop_system,
             width=50
         )
+        screen.add_widget(tool_bar)
         screen.add_widget(label)
         screen.add_widget(label_head)
         screen.add_widget(icon)
