@@ -5,7 +5,22 @@ from kivymd.uix.screen import Screen
 from kivymd.uix.label import MDLabel,MDIcon
 from kivymd.uix.toolbar import MDBottomAppBar,MDTopAppBar
 from kivymd.uix.navigationdrawer import MDNavigationDrawer 
+import pyrebase
 
+config={
+    "apiKey": "AIzaSyCIFPQHlmOeGSx2bb5ipxmFl7g_TsRuhlw",
+    "authDomain": "cctv-46183.firebaseapp.com",
+    "projectId": "cctv-46183",
+    "storageBucket": "cctv-46183.appspot.com",
+    "messagingSenderId": "224356173278",
+    "appId": "1:224356173278:web:6755a161c1ed679656494f",
+    "measurementId": "G-6RN7WDZT8F",
+    "serviceAccount":"./firebase/serviceAccount.json",
+    "databaseURL":"https://cctv-46183-default-rtdb.asia-southeast1.firebasedatabase.app"
+    }
+
+firebase=pyrebase.initialize_app(config)
+db=firebase.database()
 
 
 class AlertApp(MDApp):
@@ -42,9 +57,9 @@ class AlertApp(MDApp):
         )
 
         tool_bar=MDTopAppBar(
-            title="CCTV",
+            title="TechVision.AI",
             pos_hint={'top':1},
-            left_action_items=[["menu", lambda x: x]],
+            left_action_items=[["menu", lambda x:x]],
             right_action_items=[["chat", lambda x: x]],
 
             
@@ -74,10 +89,9 @@ class AlertApp(MDApp):
         screen.add_widget(self.Off_button)
         screen.add_widget(self.label_status)
 
-
-
         return screen
     
+
 
     def start_system(self, obj):
 
@@ -92,7 +106,7 @@ class AlertApp(MDApp):
     
 
         )
-
+        db.child("Darshan").update({"SystemOn": "True"})
         self.status="System is ON"
         self.label_status.text=self.status
 
@@ -109,7 +123,7 @@ class AlertApp(MDApp):
             size_hint=(0.5,1)
 
         )
-
+        db.child("Darshan").update({"SystemOn": "False"})
         self.status="System is OFF"
         self.label_status.text=self.status
 
