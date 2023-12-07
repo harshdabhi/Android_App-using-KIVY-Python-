@@ -7,7 +7,7 @@ from kivy.uix.screenmanager import  Screen
 import pyrebase
 from kivy.clock import Clock
 from kivy.utils import platform
-import plyer 
+# import plyer 
 import threading
 from kivy.core.audio import SoundLoader
 
@@ -20,7 +20,7 @@ config={
     "messagingSenderId": "224356173278",
     "appId": "1:224356173278:web:6755a161c1ed679656494f",
     "measurementId": "G-6RN7WDZT8F",
-    "serviceAccount":"./firebase/serviceAccount.json",
+    "serviceAccount":"serviceAccount.json",
     "databaseURL":"https://cctv-46183-default-rtdb.asia-southeast1.firebasedatabase.app"
     }
 
@@ -28,7 +28,6 @@ firebase=pyrebase.initialize_app(config)
 db=firebase.database()
 storage=firebase.storage()
 system_running_flag=threading.Event()
-
 Window.size = (350, 550)
 
 style="""
@@ -208,8 +207,8 @@ ScreenManager:
 
     Image:
         id: image_file
-        source: "no_img.jpg"
-        size_hint: None, None
+        source: "./App/no_img.jpg"
+        size_hint: 0.8, 0.6
         pos_hint: {"center_x": 0.5, "center_y": 0.5}
 
  
@@ -281,13 +280,14 @@ class SecurityApp(MDApp):
 
     def login(self):
         global system_running_flag
+        system_running_flag.clear()
+
         try:
             user = db.child(self.email.split("@")[0]).get()
             for i in user.each():
                 if i.key()=="password":
                         if i.val()==self.password:
                             self.thread=threading.Thread(target=self.start_monitoring)
-                            system_running_flag.clear()
                             self.thread.start()
                             self.root.current = "menu"
 
@@ -331,16 +331,25 @@ class SecurityApp(MDApp):
         self.sound = SoundLoader.load('alarm.wav')
         if self.sound:
             self.sound.play()
+        self.root.current='Alarm'
             
     def sound_stop(self):
+
         if hasattr(self, 'sound') and self.sound:
+            db.child(self.email.split("@")[0]).update({"Alert": "False"})
             self.sound.stop()
-        self.root.current="login"
+            self.schedule_event.cancel()
+            self.scheduled_event = None
+            system_running_flag.set()
+            self.thread.join()
+
+        self.root.current="menu"
 
         
 
 
     def start_monitoring(self):
+
 
         # Check if running on Android
         if platform == 'android':
@@ -348,28 +357,26 @@ class SecurityApp(MDApp):
             PythonService = autoclass('org.kivy.android.PythonService')
             PythonService.mService.setAutoRestartService(True)
 
-        Clock.schedule_interval(self.monitor_condition, 10)  # Check every 10 seconds
+        self.schedule_event=Clock.schedule_interval(self.monitor_condition, 10)  # Check every 10 seconds
 
     def monitor_condition(self, dt):
         try:
             condition_path = self.email.split("@")[0]
             condition = db.child(condition_path).get()
             for i in condition.each():
-                if i.key()=="SystemOn":
+                if i.key()=="Alert":
                         if i.val()=="True":
-                            system_running_flag.set()
-
                             self.sound_play()
-                            # self.send_notification("Condition is True!")
+                            # self.send_notification("ALert Human detected!")
 
 
 
         except Exception as e:
             print(f"Error while monitoring condition: {e}")
 
-    def send_notification(self, message):
+    # def send_notification(self, message):
 
-        plyer.notification.notify(title="Notification",message=message,app_name="YourAppName")
+    #     plyer.notification.notify(title="Notification",message=message,app_name="YourAppName")
     
 
    
