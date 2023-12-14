@@ -1,46 +1,41 @@
 from kivymd.app import MDApp
 from kivy.uix import label
-from kivy.core.window import Window
 from kivy.uix import button
 from kivy.lang.builder import Builder
 from kivy.uix.screenmanager import  Screen
-import pyrebase
+import firebase_admin
+from firebase_admin import credentials,db,storage
 from kivy.clock import Clock
 from kivy.utils import platform
-# import plyer 
 import threading
 from kivy.core.audio import SoundLoader
-import os
 
-config={
-    "apiKey": "AIzaSyCIFPQHlmOeGSx2bb5ipxmFl7g_TsRuhlw",
-    "authDomain": "cctv-46183.firebaseapp.com",
-    "projectId": "cctv-46183",
-    "storageBucket": "cctv-46183.appspot.com",
-    "messagingSenderId": "224356173278",
-    "appId": "1:224356173278:web:6755a161c1ed679656494f",
-    "measurementId": "G-6RN7WDZT8F",
-    "serviceAccount":{
-                            "type": "service_account",
-                            "project_id": "cctv-46183",
-                            "private_key_id": "702159e32b76082913f63118e07e959b67b4f9e6",
-                            "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDc63BHNIm61Ug5\nU7B1TwRF25yMVTiGknRifc0r3JfOn9L9PfiWYfslHFggxObqBZz8XnicM9obfURy\nUH8V53lCAv5RjcS3E6PXfbKIZW6CPDkjse0ZFfdJeDMA/N2tD+/XPzArVP+UPXoo\nailT7iGrLJ0b6JGJrUQicgQ+InuAmtuZbq2eCrC9Yw7nvJdawnumoPKNVcaEv6Id\n8NG01EaJ/LUJCKChrCLXmoNQ9mR1xxm+9ZiMiH5mcGTJ6bsIOsAMBz0zTS0L5FgS\nSDdUNJ96DqOm//6DIrQjcaXoxj7E5YryZz+zM0Sl8d7gy6P+uaCPFk64IilClAop\nmMIhDMVJAgMBAAECggEAAXDpuRUvJtBYWcNhfcpnqTr/AO1XYo1XBAN1EKmuNdNW\nEX/TfMuj00CllIUkSneB6CWHnOE7tX0yMpqy0YZChLs3RHnrxBP1OCUiQoCC4Yea\nCdERzl2V0N1fW8zKd2QIuPs5CbdSuXlTMCtNHLaLcq3mUnXIaUD/lkfvHiakbpjQ\n5S471SeXC6ZStuXVr95TEx7IQL2+SZ0jXiEAeiLTnVuWVFhuFH7w9efO+8QNtHua\nuJeYdv9P62GYpKoR4cFw4qrmfflBhd9ltViLofXZ5zVbLNYxTIPNx/W/hV5B2BBh\nBJzm7y35teLvqqmJPLb19jR82x5VuxEhwpiRgimB2QKBgQD8p+kc/eWOFEnR5qqH\n6jI48ID8+60KNESq4JGdXHF1IEBQbNXUsJB9Oh/3a/TutXzzfV7e/dwjyN641oMo\n/Xshch55TxUHMNZ4p6cR8Qz24JB7zABAWk2DiCHD7IjIIFX1ADBrucUE/YB0tbpI\nMZYO9W1SJ/WkRxE2Bem2ZDpEFQKBgQDf1/6FUIwDrV58DGs8OvYYhucldh19hdIb\nTx2RriLkdxa0S4AXI7JHZCEWerDvSrvOHEWMluQYVDPwqQSiUJ5My72NxdRx1IPL\nNcfIkKz65y96rZEtavEoXVDK3FXjcAeaJJBTLUiWkjLOHSxdvz9PB+AK3xrxup7H\nIMrUNS2FZQKBgQCU1RzfdTlavtzVhzoBopY/MH3riR5gGnYw6uUce65iPsNkHRjB\nl9kly621BKVeUQ7wKHRQi964PcXlwIe3B8sW4rDM6ScL+1r77FbgnMz0SUkThBLJ\n1eg/iVvKnHXe3h2Em73qV56V1/dpyPuZN4yb9zuU3/E1+p9K4aTRSq2AGQKBgQDK\nj8GJjqxFn5vDEdHwvUJ6S4ncwphJQNIzWFLfw/9bU9E98pzFU84/AINYvkpjIPP2\nvmrJoLpksb4W6DyDTgUSZcTxCLcJE1D4kYBrJVED9DVpBKw9t2roJhm4mc83c+fN\nO41HV9E6QK6tCoVdiHWX5P5/mAnf+gs5E5m4ky7QaQKBgCNz2OAqPZEnB16tld3L\nl0uaP247V+XtqDCNfXuPzsKr9+FyVIpeXwl7YpHdc0WCwAFB/AbjhcDAhP7T6p6x\nmsQLTiVonxpGbHqmaFIiGpEe9wTv42kdxd3XkmeqDTwuQpDM+6NjjH/CNiOBpgrS\n4n0vTkIHh6T5rmZU9wr5ELsM\n-----END PRIVATE KEY-----\n",
-                            "client_email": "firebase-adminsdk-kqo6l@cctv-46183.iam.gserviceaccount.com",
-                            "client_id": "116518382647140434338",
-                            "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-                            "token_uri": "https://oauth2.googleapis.com/token",
-                            "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-                            "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-kqo6l%40cctv-46183.iam.gserviceaccount.com",
-                            "universe_domain": "googleapis.com"
-                        },
-    "databaseURL":"https://cctv-46183-default-rtdb.asia-southeast1.firebasedatabase.app"
-    }
 
-firebase=pyrebase.initialize_app(config)
-db=firebase.database()
-storage=firebase.storage()
+
+
+cred = credentials.Certificate(
+    {
+  "type": "service_account",
+  "project_id": "cctv-46183",
+  "private_key_id": "702159e32b76082913f63118e07e959b67b4f9e6",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDc63BHNIm61Ug5\nU7B1TwRF25yMVTiGknRifc0r3JfOn9L9PfiWYfslHFggxObqBZz8XnicM9obfURy\nUH8V53lCAv5RjcS3E6PXfbKIZW6CPDkjse0ZFfdJeDMA/N2tD+/XPzArVP+UPXoo\nailT7iGrLJ0b6JGJrUQicgQ+InuAmtuZbq2eCrC9Yw7nvJdawnumoPKNVcaEv6Id\n8NG01EaJ/LUJCKChrCLXmoNQ9mR1xxm+9ZiMiH5mcGTJ6bsIOsAMBz0zTS0L5FgS\nSDdUNJ96DqOm//6DIrQjcaXoxj7E5YryZz+zM0Sl8d7gy6P+uaCPFk64IilClAop\nmMIhDMVJAgMBAAECggEAAXDpuRUvJtBYWcNhfcpnqTr/AO1XYo1XBAN1EKmuNdNW\nEX/TfMuj00CllIUkSneB6CWHnOE7tX0yMpqy0YZChLs3RHnrxBP1OCUiQoCC4Yea\nCdERzl2V0N1fW8zKd2QIuPs5CbdSuXlTMCtNHLaLcq3mUnXIaUD/lkfvHiakbpjQ\n5S471SeXC6ZStuXVr95TEx7IQL2+SZ0jXiEAeiLTnVuWVFhuFH7w9efO+8QNtHua\nuJeYdv9P62GYpKoR4cFw4qrmfflBhd9ltViLofXZ5zVbLNYxTIPNx/W/hV5B2BBh\nBJzm7y35teLvqqmJPLb19jR82x5VuxEhwpiRgimB2QKBgQD8p+kc/eWOFEnR5qqH\n6jI48ID8+60KNESq4JGdXHF1IEBQbNXUsJB9Oh/3a/TutXzzfV7e/dwjyN641oMo\n/Xshch55TxUHMNZ4p6cR8Qz24JB7zABAWk2DiCHD7IjIIFX1ADBrucUE/YB0tbpI\nMZYO9W1SJ/WkRxE2Bem2ZDpEFQKBgQDf1/6FUIwDrV58DGs8OvYYhucldh19hdIb\nTx2RriLkdxa0S4AXI7JHZCEWerDvSrvOHEWMluQYVDPwqQSiUJ5My72NxdRx1IPL\nNcfIkKz65y96rZEtavEoXVDK3FXjcAeaJJBTLUiWkjLOHSxdvz9PB+AK3xrxup7H\nIMrUNS2FZQKBgQCU1RzfdTlavtzVhzoBopY/MH3riR5gGnYw6uUce65iPsNkHRjB\nl9kly621BKVeUQ7wKHRQi964PcXlwIe3B8sW4rDM6ScL+1r77FbgnMz0SUkThBLJ\n1eg/iVvKnHXe3h2Em73qV56V1/dpyPuZN4yb9zuU3/E1+p9K4aTRSq2AGQKBgQDK\nj8GJjqxFn5vDEdHwvUJ6S4ncwphJQNIzWFLfw/9bU9E98pzFU84/AINYvkpjIPP2\nvmrJoLpksb4W6DyDTgUSZcTxCLcJE1D4kYBrJVED9DVpBKw9t2roJhm4mc83c+fN\nO41HV9E6QK6tCoVdiHWX5P5/mAnf+gs5E5m4ky7QaQKBgCNz2OAqPZEnB16tld3L\nl0uaP247V+XtqDCNfXuPzsKr9+FyVIpeXwl7YpHdc0WCwAFB/AbjhcDAhP7T6p6x\nmsQLTiVonxpGbHqmaFIiGpEe9wTv42kdxd3XkmeqDTwuQpDM+6NjjH/CNiOBpgrS\n4n0vTkIHh6T5rmZU9wr5ELsM\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-kqo6l@cctv-46183.iam.gserviceaccount.com",
+  "client_id": "116518382647140434338",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-kqo6l%40cctv-46183.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
+
+)
+firebase_admin.initialize_app(cred, {
+    'databaseURL':'https://cctv-46183-default-rtdb.asia-southeast1.firebasedatabase.app/',
+    'storageBucket': 'gs://cctv-46183.appspot.com'
+})
+
 system_running_flag=threading.Event()
-Window.size = (350, 550)
+
 
 style="""
 
@@ -279,14 +274,14 @@ class SecurityApp(MDApp):
     def start_system(self):
         self.status = "System is ON"
         self.update_status(self.status)
-        db.child(self.email.split("@")[0]).update({"SystemOn": "True"})
+        db.reference(self.email.split("@")[0]).update({"SystemOn": "True"})
 
 
     def stop_system(self):
 
         status = "System is OFF"
         self.update_status(status)
-        db.child(self.email.split("@")[0]).update({"SystemOn": "False"})
+        db.reference(self.email.split("@")[0]).update({"SystemOn": "False"})
 
 
 
@@ -295,13 +290,11 @@ class SecurityApp(MDApp):
         system_running_flag.clear()
 
         try:
-            user = db.child(self.email.split("@")[0]).get()
-            for i in user.each():
-                if i.key()=="password":
-                        if i.val()==self.password:
-                            self.thread=threading.Thread(target=self.start_monitoring)
-                            self.thread.start()
-                            self.root.current = "menu"
+            user = db.reference(self.email.split("@")[0]).get()
+            if user['Password']==self.password:
+                self.thread=threading.Thread(target=self.start_monitoring)
+                self.thread.start()
+                self.root.current = "menu"
 
         
         except:
@@ -329,7 +322,7 @@ class SecurityApp(MDApp):
     def back_to_image(self):
         destination_path = "image.jpg"
         try:
-            storage.child("images").download(destination_path,"downloaded.jpg")
+            storage.reference("images").download(destination_path,"downloaded.jpg")
             self.root.get_screen('Images').ids.image_file.source = "./downloaded.jpg"
 
 
@@ -348,7 +341,7 @@ class SecurityApp(MDApp):
     def sound_stop(self):
 
         if hasattr(self, 'sound') and self.sound:
-            db.child(self.email.split("@")[0]).update({"Alert": "False"})
+            db.reference(self.email.split("@")[0]).update({"Alert": "False"})
             self.sound.stop()
             self.schedule_event.cancel()
             self.scheduled_event = None
@@ -374,11 +367,9 @@ class SecurityApp(MDApp):
     def monitor_condition(self, dt):
         try:
             condition_path = self.email.split("@")[0]
-            condition = db.child(condition_path).get()
-            for i in condition.each():
-                if i.key()=="Alert":
-                        if i.val()=="True":
-                            self.sound_play()
+            condition = db.reference(condition_path).get()
+            if condition['Alert']=="True":
+                self.sound_play()
                             # self.send_notification("ALert Human detected!")
 
 
