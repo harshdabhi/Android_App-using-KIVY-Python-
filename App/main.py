@@ -3,6 +3,7 @@ from kivy.uix import label
 from kivy.uix import button
 from kivy.lang.builder import Builder
 from kivy.uix.screenmanager import  Screen
+from kivy.core.window import Window
 import firebase_admin
 from firebase_admin import credentials,db,storage
 from kivy.clock import Clock
@@ -11,22 +12,10 @@ import threading
 from kivy.core.audio import SoundLoader
 
 
-
+Window.size = (360, 640)
 
 cred = credentials.Certificate(
-    {
-  "type": "service_account",
-  "project_id": "cctv-46183",
-  "private_key_id": "702159e32b76082913f63118e07e959b67b4f9e6",
-  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDc63BHNIm61Ug5\nU7B1TwRF25yMVTiGknRifc0r3JfOn9L9PfiWYfslHFggxObqBZz8XnicM9obfURy\nUH8V53lCAv5RjcS3E6PXfbKIZW6CPDkjse0ZFfdJeDMA/N2tD+/XPzArVP+UPXoo\nailT7iGrLJ0b6JGJrUQicgQ+InuAmtuZbq2eCrC9Yw7nvJdawnumoPKNVcaEv6Id\n8NG01EaJ/LUJCKChrCLXmoNQ9mR1xxm+9ZiMiH5mcGTJ6bsIOsAMBz0zTS0L5FgS\nSDdUNJ96DqOm//6DIrQjcaXoxj7E5YryZz+zM0Sl8d7gy6P+uaCPFk64IilClAop\nmMIhDMVJAgMBAAECggEAAXDpuRUvJtBYWcNhfcpnqTr/AO1XYo1XBAN1EKmuNdNW\nEX/TfMuj00CllIUkSneB6CWHnOE7tX0yMpqy0YZChLs3RHnrxBP1OCUiQoCC4Yea\nCdERzl2V0N1fW8zKd2QIuPs5CbdSuXlTMCtNHLaLcq3mUnXIaUD/lkfvHiakbpjQ\n5S471SeXC6ZStuXVr95TEx7IQL2+SZ0jXiEAeiLTnVuWVFhuFH7w9efO+8QNtHua\nuJeYdv9P62GYpKoR4cFw4qrmfflBhd9ltViLofXZ5zVbLNYxTIPNx/W/hV5B2BBh\nBJzm7y35teLvqqmJPLb19jR82x5VuxEhwpiRgimB2QKBgQD8p+kc/eWOFEnR5qqH\n6jI48ID8+60KNESq4JGdXHF1IEBQbNXUsJB9Oh/3a/TutXzzfV7e/dwjyN641oMo\n/Xshch55TxUHMNZ4p6cR8Qz24JB7zABAWk2DiCHD7IjIIFX1ADBrucUE/YB0tbpI\nMZYO9W1SJ/WkRxE2Bem2ZDpEFQKBgQDf1/6FUIwDrV58DGs8OvYYhucldh19hdIb\nTx2RriLkdxa0S4AXI7JHZCEWerDvSrvOHEWMluQYVDPwqQSiUJ5My72NxdRx1IPL\nNcfIkKz65y96rZEtavEoXVDK3FXjcAeaJJBTLUiWkjLOHSxdvz9PB+AK3xrxup7H\nIMrUNS2FZQKBgQCU1RzfdTlavtzVhzoBopY/MH3riR5gGnYw6uUce65iPsNkHRjB\nl9kly621BKVeUQ7wKHRQi964PcXlwIe3B8sW4rDM6ScL+1r77FbgnMz0SUkThBLJ\n1eg/iVvKnHXe3h2Em73qV56V1/dpyPuZN4yb9zuU3/E1+p9K4aTRSq2AGQKBgQDK\nj8GJjqxFn5vDEdHwvUJ6S4ncwphJQNIzWFLfw/9bU9E98pzFU84/AINYvkpjIPP2\nvmrJoLpksb4W6DyDTgUSZcTxCLcJE1D4kYBrJVED9DVpBKw9t2roJhm4mc83c+fN\nO41HV9E6QK6tCoVdiHWX5P5/mAnf+gs5E5m4ky7QaQKBgCNz2OAqPZEnB16tld3L\nl0uaP247V+XtqDCNfXuPzsKr9+FyVIpeXwl7YpHdc0WCwAFB/AbjhcDAhP7T6p6x\nmsQLTiVonxpGbHqmaFIiGpEe9wTv42kdxd3XkmeqDTwuQpDM+6NjjH/CNiOBpgrS\n4n0vTkIHh6T5rmZU9wr5ELsM\n-----END PRIVATE KEY-----\n",
-  "client_email": "firebase-adminsdk-kqo6l@cctv-46183.iam.gserviceaccount.com",
-  "client_id": "116518382647140434338",
-  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-  "token_uri": "https://oauth2.googleapis.com/token",
-  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-kqo6l%40cctv-46183.iam.gserviceaccount.com",
-  "universe_domain": "googleapis.com"
-}
+    'serviceAccount.json'    
 
 )
 firebase_admin.initialize_app(cred, {
